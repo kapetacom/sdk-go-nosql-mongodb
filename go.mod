@@ -1,4 +1,4 @@
-module github.com/kapetacom/go-sdk-nosql-mongodb
+module github.com/kapetacom/sdk-go-nosql-mongodb
 
 go 1.21.7
 
