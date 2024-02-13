@@ -29,7 +29,8 @@ func NewMongoDB(config providers.ConfigProvider, resourceName string) (*MongoDB,
 
 	ctx := context.Background()
 	log.Printf("Connecting to mongodb database: %s\n", resourceName)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url).SetAppName("kapeta"))
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url).SetAppName(config.GetBlockReference()))
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +50,8 @@ func createConnectionString(config providers.ConfigProvider, resourceName string
 		return "", err
 	}
 	protocol := getProtocol(resInfo)
-	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, resInfo.Options["dbName"]), nil
+	dbName := getDBName(resInfo, resourceName)
+	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, dbName), nil
 }
 
 func getProtocol(resInfo *providers.ResourceInfo) string {
@@ -57,4 +59,11 @@ func getProtocol(resInfo *providers.ResourceInfo) string {
 		return fmt.Sprintf("%v", resInfo.Options["protocol"])
 	}
 	return "mongodb"
+}
+
+func getDBName(resInfo *providers.ResourceInfo, resourceName string) string {
+	if resInfo.Options["dbName"] != nil && resInfo.Options["dbName"] != "" {
+		return fmt.Sprintf("%v", resInfo.Options["dbName"])
+	}
+	return resourceName
 }
