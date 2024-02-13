@@ -1,12 +1,13 @@
+// Copyright 2023 Kapeta Inc.
+// SPDX-License-Identifier: MIT
+
 package mongo
 
 import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
-	sdkgoconfig "github.com/kapetacom/sdk-go-config"
 	"github.com/kapetacom/sdk-go-config/providers"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -16,21 +17,10 @@ const RESOURCE_TYPE = "kapeta/resource-type-mongodb"
 const RESOURCE_PORT = "mongodb"
 
 type MongoDB struct {
-	resourceName string
-	ready        bool
-	mongo        *mongo.Client
+	*mongo.Client
 }
 
-func NewMongoDB(resourceName string) *MongoDB {
-	db := &MongoDB{
-		resourceName: resourceName,
-	}
-
-	go db.init()
-	return db
-}
-
-func createMongoDBClient(config providers.ConfigProvider, resourceName string) (*mongo.Client, error) {
+func NewMongoDB(config providers.ConfigProvider, resourceName string) (*MongoDB, error) {
 	url, err := createConnectionString(config, resourceName)
 	if err != nil {
 		return nil, err
@@ -50,31 +40,7 @@ func createMongoDBClient(config providers.ConfigProvider, resourceName string) (
 	}
 	log.Printf("Connected successfully to mongodb database: %s\n", resourceName)
 
-	return client, nil
-}
-
-func (db *MongoDB) init() {
-	sdkgoconfig.CONFIG.OnReady(func(provider providers.ConfigProvider) {
-		mongo, err := createMongoDBClient(provider, db.resourceName)
-		if err != nil {
-			panic(err)
-		}
-
-		db.mongo = mongo
-		db.ready = true
-	})
-}
-
-func (db *MongoDB) Client() (*mongo.Client, error) {
-	for !db.ready {
-		time.Sleep(time.Millisecond * 100)
-	}
-
-	if db.mongo == nil {
-		return nil, fmt.Errorf("MongoDB not ready")
-	}
-
-	return db.mongo, nil
+	return &MongoDB{client}, nil
 }
 
 func createConnectionString(config providers.ConfigProvider, resourceName string) (string, error) {
@@ -82,5 +48,13 @@ func createConnectionString(config providers.ConfigProvider, resourceName string
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("mongodb://%s:%s@%s:%s/%s", resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, resInfo.Options["dbName"]), nil
+	protocol := getProtocol(resInfo)
+	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, resInfo.Options["dbName"]), nil
+}
+
+func getProtocol(resInfo *providers.ResourceInfo) string {
+	if resInfo.Options["protocol"] != nil && resInfo.Options["protocol"] != "" {
+		return fmt.Sprintf("%v", resInfo.Options["protocol"])
+	}
+	return "mongodb"
 }
