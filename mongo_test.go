@@ -47,7 +47,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 			Credentials: map[string]string{"username": "user", "password": "password"},
 		}
 		dbName := "test"
-		expected := "mongodb://user:password@localhost:27017/test"
+		urlWithPort := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true"
 
 		config := &ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
@@ -56,7 +56,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		}
 		actual, err := createConnectionString(config, dbName)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, urlWithPort, actual)
 	})
 
 	t.Run("create connection string with mongodb+srv protocol", func(t *testing.T) {
@@ -67,7 +67,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 			Credentials: map[string]string{"username": "user", "password": "password"},
 		}
 		dbName := "test"
-		expected := "mongodb+srv://user:password@localhost/test"
+		urlWithNoPort := "mongodb+srv://user:password@localhost/test"
 
 		config := &ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
@@ -76,7 +76,26 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		}
 		actual, err := createConnectionString(config, dbName)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, urlWithNoPort, actual)
+	})
+
+	t.Run("create connection string with directConnection", func(t *testing.T) {
+		resInfo := &providers.ResourceInfo{
+			Host:        "localhost",
+			Port:        "27017",
+			Credentials: map[string]string{"username": "user", "password": "password"},
+		}
+		dbName := "test"
+		urlWithPort := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true"
+
+		config := &ConfigProviderMock{
+			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
+				return resInfo, nil
+			},
+		}
+		actual, err := createConnectionString(config, dbName)
+		assert.NoError(t, err)
+		assert.Equal(t, urlWithPort, actual)
 	})
 }
 
@@ -92,7 +111,7 @@ func TestCreateConnectionString(t *testing.T) {
 			},
 		}
 		resourceName := "test"
-		expected := "mongodb://user:password@localhost:27017/test"
+		expected := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true"
 		actual, err := createConnectionString(config, resourceName)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)

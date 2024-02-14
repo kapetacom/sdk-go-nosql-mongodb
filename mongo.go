@@ -25,7 +25,6 @@ func NewMongoDB(config providers.ConfigProvider, resourceName string) (*MongoDB,
 	if err != nil {
 		return nil, err
 	}
-	url = url + "?authSource=admin&directConnection=true"
 
 	ctx := context.Background()
 	log.Printf("Connecting to mongodb database: %s\n", resourceName)
@@ -55,7 +54,7 @@ func createConnectionString(config providers.ConfigProvider, resourceName string
 	if protocol == "mongodb+srv" {
 		return fmt.Sprintf("%s://%s:%s@%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, dbName), nil
 	}
-	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, dbName), nil
+	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, dbName) + "?authSource=admin&directConnection=true", nil
 }
 
 func getProtocol(resInfo *providers.ResourceInfo) string {
