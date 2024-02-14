@@ -51,6 +51,10 @@ func createConnectionString(config providers.ConfigProvider, resourceName string
 	}
 	protocol := getProtocol(resInfo)
 	dbName := getDBName(resInfo, resourceName)
+
+	if protocol == "mongodb+srv" {
+		return fmt.Sprintf("%s://%s:%s@%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, dbName), nil
+	}
 	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, dbName), nil
 }
 
