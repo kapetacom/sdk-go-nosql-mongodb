@@ -59,7 +59,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		assert.Equal(t, urlWithPort, actual)
 	})
 
-	t.Run("create connection string with mongodb+srv protocol", func(t *testing.T) {
+	t.Run("verify that the mongodb+srv connection string doesn't have a port and a direct connection", func(t *testing.T) {
 		resInfo := &providers.ResourceInfo{
 			Host:        "localhost",
 			Port:        "27017",
@@ -67,7 +67,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 			Credentials: map[string]string{"username": "user", "password": "password"},
 		}
 		dbName := "test"
-		urlWithNoPort := "mongodb+srv://user:password@localhost/test"
+		urlWithNoPort := "mongodb+srv://user:password@localhost/test?authSource=admin"
 
 		config := &ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
@@ -79,7 +79,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		assert.Equal(t, urlWithNoPort, actual)
 	})
 
-	t.Run("create connection string with directConnection", func(t *testing.T) {
+	t.Run("verify that mongodb connection string contains directConnection", func(t *testing.T) {
 		resInfo := &providers.ResourceInfo{
 			Host:        "localhost",
 			Port:        "27017",
