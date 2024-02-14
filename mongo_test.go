@@ -39,6 +39,47 @@ func TestDBName(t *testing.T) {
 	})
 }
 
+func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
+	t.Run("create connection string with mongodb protocol", func(t *testing.T) {
+		resInfo := &providers.ResourceInfo{
+			Host:        "localhost",
+			Port:        "27017",
+			Credentials: map[string]string{"username": "user", "password": "password"},
+		}
+		dbName := "test"
+		expected := "mongodb://user:password@localhost:27017/test"
+
+		config := &ConfigProviderMock{
+			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
+				return resInfo, nil
+			},
+		}
+		actual, err := createConnectionString(config, dbName)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+	})
+
+	t.Run("create connection string with mongodb+srv protocol", func(t *testing.T) {
+		resInfo := &providers.ResourceInfo{
+			Host:        "localhost",
+			Port:        "27017",
+			Options:     map[string]interface{}{"protocol": "mongodb+srv"},
+			Credentials: map[string]string{"username": "user", "password": "password"},
+		}
+		dbName := "test"
+		expected := "mongodb+srv://user:password@localhost/test"
+
+		config := &ConfigProviderMock{
+			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
+				return resInfo, nil
+			},
+		}
+		actual, err := createConnectionString(config, dbName)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+	})
+}
+
 func TestCreateConnectionString(t *testing.T) {
 	t.Run("create connection string", func(t *testing.T) {
 		config := &ConfigProviderMock{
