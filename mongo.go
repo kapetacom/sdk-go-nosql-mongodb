@@ -34,6 +34,7 @@ func NewMongoDB(config providers.ConfigProvider, resourceName string) (*MongoDB,
 		return nil, err
 	}
 
+	log.Println("Checking connection to mongodb database")
 	err = client.Ping(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -51,10 +52,16 @@ func createConnectionString(config providers.ConfigProvider, resourceName string
 	protocol := getProtocol(resInfo)
 	dbName := getDBName(resInfo, resourceName)
 
+	url := ""
 	if protocol == "mongodb+srv" {
-		return fmt.Sprintf("%s://%s:%s@%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, dbName) + "?authSource=admin", nil
+		url = fmt.Sprintf("%s://%s:%s@%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, dbName) + "?authSource=admin"
+	} else {
+		url = fmt.Sprintf("%s://%s:%s@%s:%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, dbName) + "?authSource=admin&directConnection=true"
 	}
-	return fmt.Sprintf("%s://%s:%s@%s:%s/%s", protocol, resInfo.Credentials["username"], resInfo.Credentials["password"], resInfo.Host, resInfo.Port, dbName) + "?authSource=admin&directConnection=true", nil
+	if resInfo.Options["ssl"] != nil {
+		url += fmt.Sprintf("&ssl=%s", resInfo.Options["ssl"])
+	}
+	return url, nil
 }
 
 func getProtocol(resInfo *providers.ResourceInfo) string {
