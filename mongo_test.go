@@ -3,6 +3,7 @@ package mongo
 import (
 	"testing"
 
+	config "github.com/kapetacom/sdk-go-config"
 	"github.com/kapetacom/sdk-go-config/providers"
 	"github.com/stretchr/testify/assert"
 )
@@ -49,7 +50,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		dbName := "test"
 		urlWithPort := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true"
 
-		config := &ConfigProviderMock{
+		config := &config.ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
 				return resInfo, nil
 			},
@@ -69,7 +70,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		dbName := "test"
 		urlWithNoPort := "mongodb+srv://user:password@localhost/test?authSource=admin"
 
-		config := &ConfigProviderMock{
+		config := &config.ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
 				return resInfo, nil
 			},
@@ -88,7 +89,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		dbName := "test"
 		urlWithPort := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true"
 
-		config := &ConfigProviderMock{
+		config := &config.ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
 				return resInfo, nil
 			},
@@ -108,7 +109,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		dbName := "test"
 		urlWithPort := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true&ssl=true"
 
-		config := &ConfigProviderMock{
+		config := &config.ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
 				return resInfo, nil
 			},
@@ -128,7 +129,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		dbName := "test"
 		urlWithPort := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true&ssl=false"
 
-		config := &ConfigProviderMock{
+		config := &config.ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
 				return resInfo, nil
 			},
@@ -141,7 +142,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 
 func TestCreateConnectionString(t *testing.T) {
 	t.Run("create connection string", func(t *testing.T) {
-		config := &ConfigProviderMock{
+		config := &config.ConfigProviderMock{
 			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
 				return &providers.ResourceInfo{
 					Host:        "localhost",
@@ -156,83 +157,4 @@ func TestCreateConnectionString(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 	})
-}
-
-type ConfigProviderMock struct {
-	GetResourceInfoFunc func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error)
-}
-
-// Get implements providers.ConfigProvider.
-func (*ConfigProviderMock) Get(path string) interface{} {
-	panic("unimplemented")
-}
-
-// GetBlockDefinition implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetBlockDefinition() interface{} {
-	panic("unimplemented")
-}
-
-// GetBlockReference implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetBlockReference() string {
-	panic("unimplemented")
-}
-
-// GetInstanceForConsumer implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetInstanceForConsumer(resourceName string) (*providers.BlockInstanceDetails, error) {
-	panic("unimplemented")
-}
-
-// GetInstanceHost implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetInstanceHost(instanceID string) (string, error) {
-	panic("unimplemented")
-}
-
-// GetInstanceId implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetInstanceId() string {
-	panic("unimplemented")
-}
-
-// GetInstanceOperator implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetInstanceOperator(instanceId string) (*providers.InstanceOperator, error) {
-	panic("unimplemented")
-}
-
-// GetInstancesForProvider implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetInstancesForProvider(resourceName string) ([]*providers.BlockInstanceDetails, error) {
-	panic("unimplemented")
-}
-
-// GetOrDefault implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetOrDefault(path string, defaultValue interface{}) interface{} {
-	panic("unimplemented")
-}
-
-// GetProviderId implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetProviderId() string {
-	panic("unimplemented")
-}
-
-// GetResourceInfo implements providers.ConfigProvider.
-func (c *ConfigProviderMock) GetResourceInfo(resourceType string, portType string, resourceName string) (*providers.ResourceInfo, error) {
-	return c.GetResourceInfoFunc(resourceType, portType, resourceName)
-}
-
-// GetServerHost implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetServerHost() (string, error) {
-	panic("unimplemented")
-}
-
-// GetServerPort implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetServerPort(portType string) (string, error) {
-	panic("unimplemented")
-}
-
-// GetServiceAddress implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetServiceAddress(serviceName string, portType string) (string, error) {
-	panic("unimplemented")
-}
-
-// GetSystemId implements providers.ConfigProvider.
-func (*ConfigProviderMock) GetSystemId() string {
-	panic("unimplemented")
 }
