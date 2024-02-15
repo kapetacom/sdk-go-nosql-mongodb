@@ -97,6 +97,46 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, urlWithPort, actual)
 	})
+
+	t.Run("verify that mongodb connection string contains ssl true", func(t *testing.T) {
+		resInfo := &providers.ResourceInfo{
+			Host:        "localhost",
+			Port:        "27017",
+			Credentials: map[string]string{"username": "user", "password": "password"},
+			Options:     map[string]interface{}{"ssl": "true"},
+		}
+		dbName := "test"
+		urlWithPort := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true&ssl=true"
+
+		config := &ConfigProviderMock{
+			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
+				return resInfo, nil
+			},
+		}
+		actual, err := createConnectionString(config, dbName)
+		assert.NoError(t, err)
+		assert.Equal(t, urlWithPort, actual)
+	})
+
+	t.Run("verify that mongodb connection string contains ssl false", func(t *testing.T) {
+		resInfo := &providers.ResourceInfo{
+			Host:        "localhost",
+			Port:        "27017",
+			Credentials: map[string]string{"username": "user", "password": "password"},
+			Options:     map[string]interface{}{"ssl": "false"},
+		}
+		dbName := "test"
+		urlWithPort := "mongodb://user:password@localhost:27017/test?authSource=admin&directConnection=true&ssl=false"
+
+		config := &ConfigProviderMock{
+			GetResourceInfoFunc: func(resourceType, resourcePort, resourceName string) (*providers.ResourceInfo, error) {
+				return resInfo, nil
+			},
+		}
+		actual, err := createConnectionString(config, dbName)
+		assert.NoError(t, err)
+		assert.Equal(t, urlWithPort, actual)
+	})
 }
 
 func TestCreateConnectionString(t *testing.T) {
