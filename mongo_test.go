@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/kapetacom/sdk-go-config/providers"
@@ -43,7 +44,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 	t.Run("create connection string with mongodb protocol", func(t *testing.T) {
 		resInfo := &providers.ResourceInfo{
 			Host:        "localhost",
-			Port:        "27017",
+			Port:        json.Number("27017"),
 			Credentials: map[string]string{"username": "user", "password": "password"},
 		}
 		dbName := "test"
@@ -57,7 +58,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 	t.Run("verify that the mongodb+srv connection string doesn't have a port and a direct connection", func(t *testing.T) {
 		resInfo := &providers.ResourceInfo{
 			Host:        "localhost",
-			Port:        "27017",
+			Port:        json.Number("27017"),
 			Options:     map[string]interface{}{"protocol": "mongodb+srv"},
 			Credentials: map[string]string{"username": "user", "password": "password"},
 		}
@@ -72,7 +73,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 	t.Run("verify that mongodb connection string contains directConnection", func(t *testing.T) {
 		resInfo := &providers.ResourceInfo{
 			Host:        "localhost",
-			Port:        "27017",
+			Port:        json.Number("27017"),
 			Credentials: map[string]string{"username": "user", "password": "password"},
 		}
 		dbName := "test"
@@ -86,7 +87,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 	t.Run("verify that mongodb connection string contains ssl true", func(t *testing.T) {
 		resInfo := &providers.ResourceInfo{
 			Host:        "localhost",
-			Port:        "27017",
+			Port:        json.Number("27017"),
 			Credentials: map[string]string{"username": "user", "password": "password"},
 			Options:     map[string]interface{}{"ssl": "true"},
 		}
@@ -101,7 +102,7 @@ func TestCreateConnectionStringProtocolMongodb(t *testing.T) {
 	t.Run("verify that mongodb connection string contains ssl false", func(t *testing.T) {
 		resInfo := &providers.ResourceInfo{
 			Host:        "localhost",
-			Port:        "27017",
+			Port:        json.Number("27017"),
 			Credentials: map[string]string{"username": "user", "password": "password"},
 			Options:     map[string]interface{}{"ssl": "false"},
 		}
@@ -118,7 +119,7 @@ func TestCreateConnectionString(t *testing.T) {
 	t.Run("create connection string", func(t *testing.T) {
 		resInfo := &providers.ResourceInfo{
 			Host:        "localhost",
-			Port:        "27017",
+			Port:        json.Number("27017"),
 			Credentials: map[string]string{"username": "user", "password": "password"},
 		}
 		resourceName := "test"
