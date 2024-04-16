@@ -18,10 +18,20 @@ const RESOURCE_PORT = "mongodb"
 
 type MongoDB struct {
 	*mongo.Client
+	dbName string
+}
+
+func (m *MongoDB) DB() *mongo.Database {
+	return m.Database(m.dbName)
 }
 
 func NewMongoDB(config providers.ConfigProvider, resourceName string) (*MongoDB, error) {
-	url, err := createConnectionString(config, resourceName)
+	resInfo, err := config.GetResourceInfo(RESOURCE_TYPE, RESOURCE_PORT, resourceName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := createConnectionString(resInfo, resourceName)
 	if err != nil {
 		return nil, err
 	}
@@ -41,14 +51,10 @@ func NewMongoDB(config providers.ConfigProvider, resourceName string) (*MongoDB,
 	}
 	log.Printf("Connected successfully to mongodb database: %s\n", resourceName)
 
-	return &MongoDB{client}, nil
+	return &MongoDB{client, getDBName(resInfo, resourceName)}, nil
 }
 
-func createConnectionString(config providers.ConfigProvider, resourceName string) (string, error) {
-	resInfo, err := config.GetResourceInfo(RESOURCE_TYPE, RESOURCE_PORT, resourceName)
-	if err != nil {
-		return "", err
-	}
+func createConnectionString(resInfo *providers.ResourceInfo, resourceName string) (string, error) {
 	protocol := getProtocol(resInfo)
 	dbName := getDBName(resInfo, resourceName)
 
