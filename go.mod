@@ -3,7 +3,7 @@ module github.com/kapetacom/sdk-go-nosql-mongodb
 go 1.21.7
 
 require (
-	github.com/kapetacom/sdk-go-config v0.1.3
+	github.com/kapetacom/sdk-go-config v1.0.0
 	github.com/stretchr/testify v1.8.4
 	go.mongodb.org/mongo-driver v1.13.1
 )
