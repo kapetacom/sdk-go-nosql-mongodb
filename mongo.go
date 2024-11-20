@@ -9,8 +9,8 @@ import (
 	"log"
 
 	"github.com/kapetacom/sdk-go-config/providers"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 const RESOURCE_TYPE = "kapeta/resource-type-mongodb"
@@ -39,7 +39,7 @@ func NewMongoDB(config providers.ConfigProvider, resourceName string) (*MongoDB,
 	ctx := context.Background()
 	log.Printf("Connecting to mongodb database: %s\n", resourceName)
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url).SetAppName(config.GetBlockReference()))
+	client, err := mongo.Connect(options.Client().ApplyURI(url).SetAppName(config.GetBlockReference()))
 	if err != nil {
 		return nil, err
 	}
