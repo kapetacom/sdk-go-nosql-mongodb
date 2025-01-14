@@ -39,7 +39,7 @@ func NewMongoDB(config providers.ConfigProvider, resourceName string) (*MongoDB,
 	ctx := context.Background()
 	log.Printf("Connecting to mongodb database: %s\n", resourceName)
 
-	client, err := mongo.Connect(options.Client().ApplyURI(url).SetAppName(config.GetBlockReference()))
+	client, err := mongo.Connect(options.Client().ApplyURI(url).SetAppName(config.GetBlockReference()).SetRetryWrites(true).SetRetryReads(true))
 	if err != nil {
 		return nil, err
 	}
